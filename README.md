@@ -50,16 +50,7 @@ python predict.py
 ├── predict.py           # Run prediction for Mexico vs Ecuador
 ├── prediction_report.json
 ├── data/results.csv     # International match history
-├── models/              # Trained model artifacts
-└── linkedin/            # Carousel visuals + post copy for sharing
-```
-
-## LinkedIn assets
-
-Pre-built carousel slides and post text live in `linkedin/`. Regenerate visuals:
-
-```bash
-python linkedin/create_visuals.py
+└── models/              # Trained model artifacts
 ```
 
 ## Disclaimer
