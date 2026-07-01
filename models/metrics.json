@@ -1,0 +1,32 @@
+{
+  "samples": 32363,
+  "outcome_accuracy": 0.5721936148300721,
+  "outcome_log_loss": 0.9051073838198681,
+  "home_goals_mae": 1.0689872905858218,
+  "away_goals_mae": 0.8445059613593212,
+  "classes": [
+    "away_win",
+    "draw",
+    "home_win"
+  ],
+  "feature_columns": [
+    "neutral",
+    "is_world_cup",
+    "home_elo",
+    "away_elo",
+    "elo_diff",
+    "home_avg_goals_for",
+    "home_avg_goals_against",
+    "home_avg_points",
+    "home_win_rate",
+    "home_matches_played",
+    "away_avg_goals_for",
+    "away_avg_goals_against",
+    "away_avg_points",
+    "away_win_rate",
+    "away_matches_played",
+    "attack_diff",
+    "defense_diff",
+    "form_diff"
+  ]
+}

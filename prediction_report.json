@@ -1,0 +1,111 @@
+{
+  "match": {
+    "date": "2026-06-30",
+    "home_team": "Mexico",
+    "away_team": "Ecuador",
+    "venue": "Mexico City, Mexico",
+    "neutral": false,
+    "tournament": "FIFA World Cup",
+    "stage": "Round of 32"
+  },
+  "predicted_winner": "Mexico",
+  "win_probabilities": {
+    "Mexico": 66.7,
+    "Draw": 17.4,
+    "Ecuador": 15.9
+  },
+  "score_prediction": {
+    "most_likely_scoreline": "1-0",
+    "most_likely_score_probability_pct": 17.5,
+    "rounded_expected_goals": "1-1",
+    "expected_goals": "1.44-0.67",
+    "top_scorelines": [
+      {
+        "score": "1-0",
+        "probability_pct": 17.5
+      },
+      {
+        "score": "2-0",
+        "probability_pct": 12.7
+      },
+      {
+        "score": "0-0",
+        "probability_pct": 12.1
+      },
+      {
+        "score": "1-1",
+        "probability_pct": 11.7
+      },
+      {
+        "score": "2-1",
+        "probability_pct": 8.4
+      },
+      {
+        "score": "0-1",
+        "probability_pct": 8.1
+      },
+      {
+        "score": "3-0",
+        "probability_pct": 6.1
+      },
+      {
+        "score": "3-1",
+        "probability_pct": 4.1
+      }
+    ]
+  },
+  "team_context": {
+    "mexico_elo": 1902.9,
+    "ecuador_elo": 1892.4,
+    "mexico_recent_wc_form": [
+      {
+        "date": "2026-06-11",
+        "opponent": "South Africa",
+        "score": "2-0",
+        "venue": "H"
+      },
+      {
+        "date": "2026-06-18",
+        "opponent": "South Korea",
+        "score": "1-0",
+        "venue": "H"
+      },
+      {
+        "date": "2026-06-24",
+        "opponent": "Czech Republic",
+        "score": "3-0",
+        "venue": "H"
+      }
+    ],
+    "ecuador_recent_wc_form": [
+      {
+        "date": "2026-06-14",
+        "opponent": "Ivory Coast",
+        "score": "0-1",
+        "venue": "A"
+      },
+      {
+        "date": "2026-06-20",
+        "opponent": "Cura\u00e7ao",
+        "score": "0-0",
+        "venue": "H"
+      },
+      {
+        "date": "2026-06-25",
+        "opponent": "Germany",
+        "score": "2-1",
+        "venue": "H"
+      }
+    ],
+    "head_to_head": {
+      "matches": 26,
+      "mexico_win_rate_pct": 53.8,
+      "draw_rate_pct": 30.8
+    }
+  },
+  "model_metrics": {
+    "training_matches": 32363,
+    "holdout_accuracy": 57.2,
+    "holdout_log_loss": 0.905
+  }
+}

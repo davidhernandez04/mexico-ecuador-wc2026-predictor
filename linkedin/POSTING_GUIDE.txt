@@ -1,0 +1,65 @@
+WHAT TO POST ON LINKEDIN
+========================
+
+PRIMARY (attach to post)
+------------------------
+1. Carousel images (best engagement)
+   linkedin/slide_1_cover.png
+   linkedin/slide_2_win_probability.png
+   linkedin/slide_3_scorelines.png
+   linkedin/slide_4_team_form.png
+   linkedin/slide_5_methodology.png
+
+   OR single image:
+   linkedin/linkedin_single_landscape.png
+
+2. Post text
+   linkedin/linkedin_post.txt  (pick Option A, B, or C)
+
+
+STRONGLY RECOMMENDED (link in post or first comment)
+----------------------------------------------------
+3. GitHub repository
+   Push the mexico-ecuador-predictor folder to GitHub and link it.
+   Recruiters and engineers want to see:
+   - features.py (feature engineering)
+   - train.py (model training)
+   - predict.py (inference)
+   - prediction_report.json (structured output)
+
+   Suggested first comment:
+   "Code and reproducible pipeline: [your GitHub URL]"
+
+
+OPTIONAL BUT HIGH VALUE
+-----------------------
+4. prediction_report.json
+   Attach as a document OR paste key stats in a comment.
+   Shows you deliver machine-readable outputs, not just charts.
+
+5. Short screen recording (15–30 sec)
+   Record terminal running: python3 predict.py
+   Post as a video or LinkedIn document.
+   Motion content gets more reach than static images alone.
+
+6. Notebook (if you want extra credibility)
+   A 1-page Jupyter notebook with the prediction cells only.
+   Good for data-science audiences; skip if your network is general business.
+
+7. Follow-up post (after the match)
+   "Model vs reality" — one slide with predicted vs actual score.
+   These post-mortems perform very well and show intellectual honesty.
+
+
+WHAT NOT TO POST
+----------------
+- The full 49K-row results.csv (too large, not interesting on LinkedIn)
+- Trained .joblib model binaries (not human-readable)
+- Anything claiming "guaranteed" predictions — undermines credibility
+
+
+SUGGESTED FIRST COMMENT (copy/paste)
+------------------------------------
+Methodology note: blended a Gradient Boosting classifier (outcome) with a Poisson score model (goals). Trained on 32,363 international matches since 1990. Holdout accuracy ~57%. Football has high variance — this is probabilistic forecasting, not certainty.
+
+Code: [add your GitHub link]
