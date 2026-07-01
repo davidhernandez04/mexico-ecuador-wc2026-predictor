@@ -83,7 +83,7 @@ Today's forecast:
 Mexico 66.7% | Draw 17.4% | Ecuador 15.9%
 Top scoreline: 1-0 (17.5%)
 
-Code + data pipeline are reproducible end-to-end.
+Code + data pipeline: https://github.com/davidhernandez04/mexico-ecuador-wc2026-predictor
 
 If you're hiring for ML / analytics roles — this is the kind of end-to-end work I enjoy: data → model → insight → communication.
 

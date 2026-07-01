@@ -28,7 +28,7 @@ STRONGLY RECOMMENDED (link in post or first comment)
    - prediction_report.json (structured output)
 
    Suggested first comment:
-   "Code and reproducible pipeline: [your GitHub URL]"
+   "Code and reproducible pipeline: https://github.com/davidhernandez04/mexico-ecuador-wc2026-predictor"
 
 
 OPTIONAL BUT HIGH VALUE
@@ -62,4 +62,4 @@ SUGGESTED FIRST COMMENT (copy/paste)
 ------------------------------------
 Methodology note: blended a Gradient Boosting classifier (outcome) with a Poisson score model (goals). Trained on 32,363 international matches since 1990. Holdout accuracy ~57%. Football has high variance — this is probabilistic forecasting, not certainty.
 
-Code: [add your GitHub link]
+Code: https://github.com/davidhernandez04/mexico-ecuador-wc2026-predictor
