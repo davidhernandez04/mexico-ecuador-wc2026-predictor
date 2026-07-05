@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Predict Mexico vs Ecuador World Cup Round of 32 match."""
+"""Predict Mexico vs England World Cup Round of 16 match."""
 
 from __future__ import annotations
 
@@ -18,13 +18,13 @@ DATA_PATH = ROOT / "data" / "results.csv"
 MODEL_DIR = ROOT / "models"
 
 MATCH = {
-    "date": "2026-06-30",
+    "date": "2026-07-05",
     "home_team": "Mexico",
-    "away_team": "Ecuador",
+    "away_team": "England",
     "venue": "Mexico City, Mexico",
     "neutral": False,
     "tournament": "FIFA World Cup",
-    "stage": "Round of 32",
+    "stage": "Round of 16",
 }
 
 
@@ -32,15 +32,21 @@ def poisson_pmf(k: int, lam: float) -> float:
     return math.exp(-lam) * (lam**k) / math.factorial(k)
 
 
-def score_distribution(home_lambda: float, away_lambda: float, max_goals: int = 6) -> pd.DataFrame:
+def score_distribution(
+    home_lambda: float,
+    away_lambda: float,
+    home_team: str,
+    away_team: str,
+    max_goals: int = 6,
+) -> pd.DataFrame:
     rows = []
     for h in range(max_goals + 1):
         for a in range(max_goals + 1):
             p = poisson_pmf(h, home_lambda) * poisson_pmf(a, away_lambda)
             if h > a:
-                result = "Mexico win"
+                result = f"{home_team} win"
             elif h < a:
-                result = "Ecuador win"
+                result = f"{away_team} win"
             else:
                 result = "Draw"
             rows.append({"home_goals": h, "away_goals": a, "probability": p, "result": result})
@@ -49,7 +55,7 @@ def score_distribution(home_lambda: float, away_lambda: float, max_goals: int = 
     return df.sort_values("probability", ascending=False).reset_index(drop=True)
 
 
-def recent_world_cup_form(team: str, n: int = 3) -> list[dict]:
+def recent_world_cup_form(team: str, n: int = 4) -> list[dict]:
     df = load_results(str(DATA_PATH))
     wc = df[df["tournament"].str.contains("FIFA World Cup", na=False)]
     wc = wc[(wc["home_team"] == team) | (wc["away_team"] == team)]
@@ -73,6 +79,9 @@ def recent_world_cup_form(team: str, n: int = 3) -> list[dict]:
 
 
 def main() -> None:
+    home_team = MATCH["home_team"]
+    away_team = MATCH["away_team"]
+
     outcome_model = joblib.load(MODEL_DIR / "outcome_model.joblib")
     home_goal_model = joblib.load(MODEL_DIR / "home_goals_model.joblib")
     away_goal_model = joblib.load(MODEL_DIR / "away_goals_model.joblib")
@@ -82,15 +91,13 @@ def main() -> None:
 
     X, team_context = build_match_features(
         str(DATA_PATH),
-        home_team=MATCH["home_team"],
-        away_team=MATCH["away_team"],
+        home_team=home_team,
+        away_team=away_team,
         neutral=MATCH["neutral"],
         tournament=MATCH["tournament"],
         cutoff_date=MATCH["date"],
     )
 
-    # Head-to-head features are used at inference but not in the base training set.
-    # Align to the columns each saved model expects.
     base_features = metrics["feature_columns"]
     X_outcome = X[base_features]
     X_goals = X[base_features]
@@ -99,9 +106,9 @@ def main() -> None:
     classes = list(outcome_model.named_steps["clf"].classes_)
     prob_map = {label: float(p) for label, p in zip(classes, proba)}
 
-    mexico_win_ml = prob_map.get("home_win", 0.0)
+    home_win_ml = prob_map.get("home_win", 0.0)
     draw_ml = prob_map.get("draw", 0.0)
-    ecuador_win_ml = prob_map.get("away_win", 0.0)
+    away_win_ml = prob_map.get("away_win", 0.0)
 
     home_lambda = max(0.15, float(home_goal_model.predict(X_goals)[0]))
     away_lambda = max(0.15, float(away_goal_model.predict(X_goals)[0]))
@@ -110,42 +117,41 @@ def main() -> None:
         home_lambda *= 1.08
         away_lambda *= 0.95
 
-    score_df = score_distribution(home_lambda, away_lambda)
-    poisson_mexico = float(score_df.loc[score_df["result"] == "Mexico win", "probability"].sum())
+    score_df = score_distribution(home_lambda, away_lambda, home_team, away_team)
+    poisson_home = float(score_df.loc[score_df["result"] == f"{home_team} win", "probability"].sum())
     poisson_draw = float(score_df.loc[score_df["result"] == "Draw", "probability"].sum())
-    poisson_ecuador = float(score_df.loc[score_df["result"] == "Ecuador win", "probability"].sum())
+    poisson_away = float(score_df.loc[score_df["result"] == f"{away_team} win", "probability"].sum())
 
-    # Blend classifier and Poisson-derived outcome probabilities.
-    mexico_win = 0.55 * mexico_win_ml + 0.45 * poisson_mexico
+    home_win = 0.55 * home_win_ml + 0.45 * poisson_home
     draw = 0.55 * draw_ml + 0.45 * poisson_draw
-    ecuador_win = 0.55 * ecuador_win_ml + 0.45 * poisson_ecuador
-    total = mexico_win + draw + ecuador_win
-    mexico_win /= total
+    away_win = 0.55 * away_win_ml + 0.45 * poisson_away
+    total = home_win + draw + away_win
+    home_win /= total
     draw /= total
-    ecuador_win /= total
+    away_win /= total
 
     top_scores = score_df.head(8)
     most_likely = top_scores.iloc[0]
     predicted_score = f"{int(round(home_lambda))}-{int(round(away_lambda))}"
     expected_score = f"{home_lambda:.2f}-{away_lambda:.2f}"
 
-    if mexico_win >= max(draw, ecuador_win):
-        predicted_winner = "Mexico"
-    elif ecuador_win >= max(mexico_win, draw):
-        predicted_winner = "Ecuador"
+    if home_win >= max(draw, away_win):
+        predicted_winner = home_team
+    elif away_win >= max(home_win, draw):
+        predicted_winner = away_team
     else:
         predicted_winner = "Draw"
 
-    mexico_form = recent_world_cup_form("Mexico")
-    ecuador_form = recent_world_cup_form("Ecuador")
+    home_form = recent_world_cup_form(home_team)
+    away_form = recent_world_cup_form(away_team)
 
     report = {
         "match": MATCH,
         "predicted_winner": predicted_winner,
         "win_probabilities": {
-            "Mexico": round(mexico_win * 100, 1),
+            home_team: round(home_win * 100, 1),
             "Draw": round(draw * 100, 1),
-            "Ecuador": round(ecuador_win * 100, 1),
+            away_team: round(away_win * 100, 1),
         },
         "score_prediction": {
             "most_likely_scoreline": f"{int(most_likely['home_goals'])}-{int(most_likely['away_goals'])}",
@@ -161,13 +167,13 @@ def main() -> None:
             ],
         },
         "team_context": {
-            "mexico_elo": round(team_context["elo"], 1),
-            "ecuador_elo": round(team_context["away_elo"], 1),
-            "mexico_recent_wc_form": mexico_form,
-            "ecuador_recent_wc_form": ecuador_form,
+            f"{home_team.lower()}_elo": round(team_context["elo"], 1),
+            f"{away_team.lower()}_elo": round(team_context["away_elo"], 1),
+            f"{home_team.lower()}_recent_wc_form": home_form,
+            f"{away_team.lower()}_recent_wc_form": away_form,
             "head_to_head": {
                 "matches": int(team_context["h2h_matches"]),
-                "mexico_win_rate_pct": round(team_context["h2h_home_win_rate"] * 100, 1),
+                f"{home_team.lower()}_win_rate_pct": round(team_context["h2h_home_win_rate"] * 100, 1),
                 "draw_rate_pct": round(team_context["h2h_draw_rate"] * 100, 1),
             },
         },
@@ -179,7 +185,7 @@ def main() -> None:
     }
 
     print("=" * 60)
-    print("MEXICO vs ECUADOR — 2026 FIFA World Cup (Round of 32)")
+    print(f"{home_team.upper()} vs {away_team.upper()} — 2026 FIFA World Cup ({MATCH['stage']})")
     print(f"Date: {MATCH['date']} | Venue: {MATCH['venue']}")
     print("=" * 60)
     print(f"\nPredicted winner: {report['predicted_winner']}")
@@ -198,12 +204,13 @@ def main() -> None:
         print(f"    {item['score']:5s}  {item['probability_pct']:4.1f}%")
 
     print("\n2026 World Cup form:")
-    print("  Mexico:", ", ".join(f"{g['score']} vs {g['opponent']}" for g in mexico_form))
-    print("  Ecuador:", ", ".join(f"{g['score']} vs {g['opponent']}" for g in ecuador_form))
+    print(f"  {home_team}:", ", ".join(f"{g['score']} vs {g['opponent']}" for g in home_form))
+    print(f"  {away_team}:", ", ".join(f"{g['score']} vs {g['opponent']}" for g in away_form))
 
-    print("\nHead-to-head (historical):", report["team_context"]["head_to_head"]["matches"], "matches")
-    print(f"  Mexico win rate: {report['team_context']['head_to_head']['mexico_win_rate_pct']}%")
-    print(f"  Draw rate:       {report['team_context']['head_to_head']['draw_rate_pct']}%")
+    h2h = report["team_context"]["head_to_head"]
+    print("\nHead-to-head (historical):", h2h["matches"], "matches")
+    print(f"  {home_team} win rate: {h2h[f'{home_team.lower()}_win_rate_pct']}%")
+    print(f"  Draw rate:            {h2h['draw_rate_pct']}%")
 
     print("\nModel quality (holdout):")
     print(f"  Accuracy: {report['model_metrics']['holdout_accuracy']}%")

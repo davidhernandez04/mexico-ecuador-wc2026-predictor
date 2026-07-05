@@ -1,9 +1,9 @@
 {
-  "samples": 32363,
-  "outcome_accuracy": 0.5721936148300721,
-  "outcome_log_loss": 0.9051073838198681,
-  "home_goals_mae": 1.0689872905858218,
-  "away_goals_mae": 0.8445059613593212,
+  "samples": 32377,
+  "outcome_accuracy": 0.5754581017088738,
+  "outcome_log_loss": 0.9072727643872159,
+  "home_goals_mae": 1.0776027674104818,
+  "away_goals_mae": 0.8478984140525476,
   "classes": [
     "away_win",
     "draw",
